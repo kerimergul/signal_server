@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 
 const imageSchema = new Schema({
-    data: { type: String, required: false }
+    data: { type: Blob, required: false }
 },
     {
         timestamps: true

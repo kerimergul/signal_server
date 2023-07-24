@@ -6,7 +6,7 @@ export default async (req, res) => {
         console.log(req.body);
         let img = req.body.img;
         const image = new Image({
-            data: JSON.stringify(img),
+            data: img,
         })
         console.log(image);
         await image.save().catch((err) => {
@@ -19,8 +19,6 @@ export default async (req, res) => {
         console.log(error);
     }
     return res.status(200).json({
-        resultMessage: { en: getText('en', '00089'), tr: getText('tr', '00089') },
-        resultCode: '00089',
         status: status,
     });
 
