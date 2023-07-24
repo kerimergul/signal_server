@@ -5,6 +5,11 @@ export default async (req, res) => {
     let list = [];
     try {
         let skip = req.body.skip;
+        const countOf = await Image.countDocuments();
+        if (skip >= countOf) {
+            skip = 0;
+        }
+
         list = await Image.findOne().sort({ createdAt: -1 }).skip(skip).catch((err) => {
             console.log(err);
             status = false;
