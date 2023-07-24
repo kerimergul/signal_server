@@ -6,7 +6,7 @@ export default async (req, res) => {
         console.log(req.body);
         let img = req.body.img;
         const image = new Image({
-            data: img,
+            data: JSON.stringify(img),
         })
         console.log(image);
         await image.save().catch((err) => {
