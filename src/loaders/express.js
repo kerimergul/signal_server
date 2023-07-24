@@ -5,7 +5,6 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import { prefix } from './../config/index.js';
 import routes from './../api/routes/index.js';
-import { logger } from '../utils/index.js';
 import { rateLimiter } from '../api/middlewares/index.js';
 import { jwtSecretKey } from '../config/index.js';
 import bodyParser from 'body-parser';
@@ -13,16 +12,13 @@ import bodyParser from 'body-parser';
 export default (app) => {
   process.on('uncaughtException', async (error) => {
     // console.log(error);
-    logger('00001', '', error.message, 'Uncaught Exception', '');
   });
 
   process.on('unhandledRejection', async (ex) => {
     // console.log(ex);
-    logger('00002', '', ex.message, 'Unhandled Rejection', '');
   });
 
   if (!jwtSecretKey) {
-    logger('00003', '', 'Jwtprivatekey is not defined', 'Process-Env', '');
     process.exit(1);
   }
 
@@ -79,7 +75,6 @@ export default (app) => {
       resultCode = '00014';
       level = 'Client Error';
     }
-    logger(resultCode, req?.user?._id ?? '', error.message, level, req);
     return res.json({
       resultMessage: {
         en: error.message,

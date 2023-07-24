@@ -1,4 +1,3 @@
-import logger from '../logger.js';
 import en from '../lang/en.js';
 import tr from '../lang/tr.js';
 
@@ -14,7 +13,6 @@ export default (code, req, errorMessage) => {
   const trMessage = tr[key];
 
   // if (enMessage.includes('server error')) {
-  logger(code, userId, errorMessage ?? enMessage, 'Server Error', req);
   // } else {
   //   logger(code, userId, errorMessage ?? enMessage, 'Client Error', req);
   // }
