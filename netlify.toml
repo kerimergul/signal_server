@@ -1,0 +1,9 @@
+[[redirects]]
+  from = "/api/image/getImage"
+  to = "/api/image/getImage"
+  status = 200
+
+[[redirects]]
+  from = "/api/image/upload"
+  to = "/api/image/upload"
+  status = 200
