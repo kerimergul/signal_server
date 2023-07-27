@@ -37,7 +37,7 @@ export default (app) => {
 
   app.use(rateLimiter);
   // app.use(prefix, routes);
-  const cache = new NodeCache({ stdTTL: 15 });
+  const cache = new NodeCache({ stdTTL: 15, deleteOnExpire: false });
 
   const verifyCache = (req, res, next) => {
     try {
@@ -76,6 +76,29 @@ export default (app) => {
     res.send({
       status: status,
       img: list
+    });
+    res.end();
+    return;
+  });
+
+  app.post("/api/image/upload", verifyCache, async (req, res) => {
+    let status = true;
+    try {
+      let img = req.body.img;
+      const image = new Image({
+        data: img,
+      })
+      await image.save().catch((err) => {
+        console.log(err);
+        status = false;
+      })
+
+    } catch (error) {
+      status = false;
+      console.log(error);
+    }
+    res.send({
+      status: status,
     });
     res.end();
     return;
