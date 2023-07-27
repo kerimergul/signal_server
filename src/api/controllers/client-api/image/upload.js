@@ -16,8 +16,9 @@ export default async (req, res) => {
         status = false;
         console.log(error);
     }
-    return res.status(200).json({
+    res.send({
         status: status,
     });
-
+    res.end();
+    return;
 };

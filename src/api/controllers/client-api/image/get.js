@@ -1,9 +1,13 @@
 import { Image } from '../../../../models/index.js';
+import process from "process";
 
 export default async (req, res) => {
     let status = true;
     let list = [];
+
     try {
+        let usage = process.cpuUsage();
+        console.log(usage)
         let skip = req.body.skip;
         const countOf = await Image.countDocuments();
         if (skip >= countOf) {
@@ -18,9 +22,10 @@ export default async (req, res) => {
         console.log(error);
         status = false;
     }
-    return res.status(200).json({
+    res.send({
         status: status,
         img: list
     });
-
+    res.end();
+    return;
 };
