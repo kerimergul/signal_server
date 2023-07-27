@@ -54,7 +54,7 @@ export default (app) => {
     }
   };
 
-  app.post("/api/images/getImage", verifyCache, async (req, res) => {
+  app.post("/api/image/getImage", verifyCache, async (req, res) => {
     let status = true;
     let list = [];
     try {
