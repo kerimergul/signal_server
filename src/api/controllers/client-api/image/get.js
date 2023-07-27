@@ -3,9 +3,10 @@ import process from "process";
 
 export default async (req, res) => {
     let status = true;
-    let list = [];
+    let list = [];   
 
     try {
+
         let usage = process.cpuUsage();
         console.log(usage)
         let skip = req.body.skip;

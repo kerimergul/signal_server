@@ -8,6 +8,8 @@ import routes from './../api/routes/index.js';
 import { rateLimiter } from '../api/middlewares/index.js';
 import { jwtSecretKey } from '../config/index.js';
 import bodyParser from 'body-parser';
+import NodeCache from "node-cache";
+import { Image } from "../models/index.js";
 
 export default (app) => {
   process.on('uncaughtException', async (error) => {
@@ -35,6 +37,49 @@ export default (app) => {
 
   app.use(rateLimiter);
   app.use(prefix, routes);
+
+  const cache = new NodeCache({ stdTTL: 15 });
+
+  const verifyCache = (req, res, next) => {
+    try {
+      const skip = req.body.skip;
+      if (cache.has(skip)) {
+        return res.status(200).json({
+          status: true,
+          img: cache.get(skip),
+        })
+      }
+      return next();
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
+
+  app.post("/api/images/getImage", verifyCache, async (req, res) => {
+    let status = true;
+    let list = [];
+    try {
+      let skip = req.body.skip;
+      const countOf = await Image.countDocuments();
+      if (skip >= countOf) {
+        skip = 0;
+      }
+
+      list = await Image.findOne().sort({ createdAt: -1 }).skip(skip).catch((err) => {
+        console.log(err);
+        status = false;
+      });
+    } catch (error) {
+      console.log(error);
+      status = false;
+    }
+    res.send({
+      status: status,
+      img: list
+    });
+    res.end();
+    return;
+  });
 
   app.get('/', (_req, res) => {
     return res.status(200).json({
@@ -85,3 +130,4 @@ export default (app) => {
 
   });
 }
+

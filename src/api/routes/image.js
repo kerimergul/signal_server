@@ -5,7 +5,7 @@ const router = Router();
 
 
 router.post('/upload', upload);
-router.post('/getImage', get);
+// router.post('/getImage', get);
 
 
 export default router
