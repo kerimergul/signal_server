@@ -69,6 +69,7 @@ export default (app) => {
         console.log(err);
         status = false;
       });
+      cache.set(skip, list);
     } catch (error) {
       console.log(error);
       status = false;
