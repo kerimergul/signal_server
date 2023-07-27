@@ -36,8 +36,7 @@ export default (app) => {
   app.disable('etag');
 
   app.use(rateLimiter);
-  app.use(prefix, routes);
-
+  // app.use(prefix, routes);
   const cache = new NodeCache({ stdTTL: 15 });
 
   const verifyCache = (req, res, next) => {
@@ -81,6 +80,7 @@ export default (app) => {
     res.end();
     return;
   });
+
 
   app.get('/', (_req, res) => {
     return res.status(200).json({
