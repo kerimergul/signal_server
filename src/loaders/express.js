@@ -104,31 +104,31 @@ export default (app) => {
     next();
   });
 
-  app.use((_req, _res, next) => {
-    const error = new Error('Endpoint could not find!');
-    error.status = 404;
-    next(error);
-  });
+  // app.use((_req, _res, next) => {
+  //   const error = new Error('Endpoint could not find!');
+  //   error.status = 404;
+  //   next(error);
+  // });
 
-  app.use((error, req, res, _next) => {
-    res.status(error.status || 500);
-    let resultCode = '00015';
-    let level = 'External Error';
-    if (error.status === 500) {
-      resultCode = '00013';
-      level = 'Server Error';
-    } else if (error.status === 404) {
-      resultCode = '00014';
-      level = 'Client Error';
-    }
-    return res.json({
-      resultMessage: {
-        en: error.message,
-        tr: error.message
-      },
-      resultCode: resultCode,
-    });
+  // app.use((error, req, res, _next) => {
+  //   res.status(error.status || 500);
+  //   let resultCode = '00015';
+  //   let level = 'External Error';
+  //   if (error.status === 500) {
+  //     resultCode = '00013';
+  //     level = 'Server Error';
+  //   } else if (error.status === 404) {
+  //     resultCode = '00014';
+  //     level = 'Client Error';
+  //   }
+  //   return res.json({
+  //     resultMessage: {
+  //       en: error.message,
+  //       tr: error.message
+  //     },
+  //     resultCode: resultCode,
+  //   });
 
-  });
+  // });
 }
 
