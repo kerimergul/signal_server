@@ -85,13 +85,17 @@ export default (app) => {
     let status = true;
     try {
       let img = req.body.img;
+      const countOf = await Image.countDocuments();
       const image = new Image({
         data: img,
       })
+     
       await image.save().catch((err) => {
         console.log(err);
         status = false;
       })
+
+      cache.set(countOf + 1, image);
 
     } catch (error) {
       status = false;
