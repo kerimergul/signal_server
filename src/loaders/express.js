@@ -39,6 +39,23 @@ export default (app) => {
   // app.use(prefix, routes);
   const cache = new NodeCache({ stdTTL: 15, deleteOnExpire: false });
 
+
+  const setCache = async () => {
+    try {
+      const list = await Image.find({});
+      if (list.length > 0) {
+        for (let i = 0; i < list.length; i++) {
+          const image = list[i];
+          cache.set(i, image);
+        }
+      }
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
+
   const verifyCache = async (req, res, next) => {
     try {
       const countOf = await Image.countDocuments();
