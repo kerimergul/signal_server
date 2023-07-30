@@ -41,16 +41,14 @@ export default (app) => {
 
   const verifyCache = async (req, res, next) => {
     try {
-      const skip = req.body.skip;
       const countOf = await Image.countDocuments();
-      if (skip >= countOf) {
-        skip = 0;
+      if (req.body.skip >= countOf) {
         req.body.skip = 0;
       }
-      if (cache.has(skip)) {
+      if (cache.has(req.body.skip)) {
         return res.status(200).json({
           status: true,
-          img: cache.get(skip),
+          img: cache.get(req.body.skip),
         })
       }
       return next();
