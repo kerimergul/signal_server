@@ -61,8 +61,7 @@ export default (app) => {
     let status = true;
     let list = [];
     try {
-
-
+      let skip = req.body.skip;
       list = await Image.findOne().skip(skip).catch((err) => {
         console.log(err);
         status = false;
