@@ -64,7 +64,7 @@ export default (app) => {
         skip = 0;
       }
 
-      list = await Image.findOne().sort({ createdAt: -1 }).skip(skip).catch((err) => {
+      list = await Image.findOne().skip(skip).catch((err) => {
         console.log(err);
         status = false;
       });
@@ -89,7 +89,7 @@ export default (app) => {
       const image = new Image({
         data: img,
       })
-     
+
       await image.save().catch((err) => {
         console.log(err);
         status = false;
