@@ -39,9 +39,14 @@ export default (app) => {
   // app.use(prefix, routes);
   const cache = new NodeCache({ stdTTL: 15, deleteOnExpire: false });
 
-  const verifyCache = (req, res, next) => {
+  const verifyCache = async (req, res, next) => {
     try {
       const skip = req.body.skip;
+      const countOf = await Image.countDocuments();
+      if (skip >= countOf) {
+        skip = 0;
+        req.body.skip = 0;
+      }
       if (cache.has(skip)) {
         return res.status(200).json({
           status: true,
@@ -58,11 +63,7 @@ export default (app) => {
     let status = true;
     let list = [];
     try {
-      let skip = req.body.skip;
-      const countOf = await Image.countDocuments();
-      if (skip >= countOf) {
-        skip = 0;
-      }
+
 
       list = await Image.findOne().skip(skip).catch((err) => {
         console.log(err);
