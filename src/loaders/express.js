@@ -60,7 +60,7 @@ export default (app) => {
     try {
       const countOf = await Image.countDocuments();
       if (req.body.skip >= countOf) {
-        req.body.skip = 0;
+        req.body.skip = req.body.skip % countOf;
       }
       if (cache.has(req.body.skip)) {
         return res.status(200).json({
