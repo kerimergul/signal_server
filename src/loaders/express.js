@@ -39,6 +39,14 @@ export default (app) => {
   // app.use(prefix, routes);
   const cache = new NodeCache({ stdTTL: 15, deleteOnExpire: false });
 
+  app.get("/api/setCache", verifyCache, async (req, res) => {
+    const status = await setCache();
+    res.send({
+      status: status,
+    });
+    res.end();
+    return;
+  });
 
   const setCache = async () => {
     try {
@@ -46,7 +54,9 @@ export default (app) => {
       if (list.length > 0) {
         for (let i = 0; i < list.length; i++) {
           const image = list[i];
-          cache.set(i, image);
+          if (!cache.has(i)) {
+            cache.set(i, image);
+          }
         }
       }
       return true;
@@ -59,6 +69,7 @@ export default (app) => {
   const verifyCache = async (req, res, next) => {
     try {
       const countOf = await Image.countDocuments();
+      req.body.skip = Math.floor(Math.random() * countOf);
       if (req.body.skip >= countOf) {
         req.body.skip = req.body.skip % countOf;
       }
