@@ -39,16 +39,9 @@ export default (app) => {
   // app.use(prefix, routes);
   const cache = new NodeCache({ stdTTL: 15, deleteOnExpire: false });
 
-  app.get("/api/setCache", async (req, res) => {
-    const status = await setCache();
-    res.send({
-      status: status,
-    });
-    res.end();
-    return;
-  });
 
-  const setCache = async () => {
+
+  const setCache = async (req, res, next) => {
     try {
       const list = await Image.find({});
       if (list.length > 0) {
@@ -59,10 +52,14 @@ export default (app) => {
           }
         }
       }
-      return true;
+      return res.status(200).json({
+        status: true,
+      })
     } catch (error) {
       console.log(error);
-      return false;
+      return res.status(200).json({
+        status: false,
+      })
     }
   }
 
@@ -134,6 +131,10 @@ export default (app) => {
     return;
   });
 
+  app.get("/api/image/setCache", setCache, async (req, res) => {
+    res.end();
+    return;
+  });
 
   app.get('/', (_req, res) => {
     return res.status(200).json({
