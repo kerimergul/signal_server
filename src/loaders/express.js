@@ -39,7 +39,7 @@ export default (app) => {
   // app.use(prefix, routes);
   const cache = new NodeCache({ stdTTL: 15, deleteOnExpire: false });
 
-  app.get("/api/setCache", verifyCache, async (req, res) => {
+  app.get("/api/setCache", async (req, res) => {
     const status = await setCache();
     res.send({
       status: status,
