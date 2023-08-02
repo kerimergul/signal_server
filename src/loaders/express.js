@@ -104,7 +104,7 @@ export default (app) => {
     return;
   });
 
-  app.post("/api/image/upload", verifyCache, async (req, res) => {
+  app.post("/api/image/upload", async (req, res) => {
     let status = true;
     try {
       let img = req.body.img;
