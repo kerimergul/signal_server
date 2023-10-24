@@ -128,6 +128,9 @@ export default (app) => {
     let list = [];
 
     let skip = Number(req.body.skip) - 1;
+    if (skip < 0) {
+      skip = 0;
+    }
     list = await Image.findOne().skip(skip).catch((err) => {
       console.log(err);
       status = false;
