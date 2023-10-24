@@ -99,7 +99,9 @@ export default (app) => {
   const verifyCache = async (req, res, next) => {
     try {
       let type = req.body.type;
+      console.log(['type', type])
       const countOf = await Image.countDocuments({ type: type });
+      console.log(['countOf', countOf])
       if (currentSkip === 0) {
         req.body.skip = countOf;
       } else if (currentSkip === countOf) {
@@ -131,7 +133,7 @@ export default (app) => {
     if (skip < 0) {
       skip = 0;
     }
-    list = await Image.findOne().skip(skip).catch((err) => {
+    list = await Image.findOne({ type: req.body.type }).skip(skip).catch((err) => {
       console.log(err);
       status = false;
     });
