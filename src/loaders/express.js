@@ -36,6 +36,7 @@ export default (app) => {
   app.disable('etag');
 
   app.use(rateLimiter);
+  let currentSkip = 0;
   // app.use(prefix, routes);
   const cache = new NodeCache({ stdTTL: 15, deleteOnExpire: false });
 
@@ -66,10 +67,16 @@ export default (app) => {
   const verifyCache = async (req, res, next) => {
     try {
       const countOf = await Image.countDocuments();
-      req.body.skip = Math.floor(Math.random() * countOf);
-      if (req.body.skip >= countOf) {
+      if (currentSkip === 0) {
+        req.body.skip = countOf;
+      } else if (currentSkip === countOf) {
+        req.body.skip = currentSkip - 1;
+      }
+
+      if (req.body.skip > countOf) {
         req.body.skip = req.body.skip % countOf;
       }
+      currentSkip = req.body.skip;
       if (cache.has(req.body.skip)) {
         return res.status(200).json({
           status: true,
@@ -86,11 +93,12 @@ export default (app) => {
     let status = true;
     let list = [];
     try {
-      let skip = req.body.skip;
+      let skip = Number(req.body.skip) - 1;
       list = await Image.findOne().skip(skip).catch((err) => {
         console.log(err);
         status = false;
       });
+      // list = list[0];
       cache.set(skip, list);
     } catch (error) {
       console.log(error);
@@ -117,6 +125,7 @@ export default (app) => {
         console.log(err);
         status = false;
       })
+      currentSkip = 0;
 
       cache.set(countOf + 1, image);
 
