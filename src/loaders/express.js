@@ -38,7 +38,38 @@ export default (app) => {
   app.use(rateLimiter);
   let currentSkip = 0;
   // app.use(prefix, routes);
-  const cache = new NodeCache({ stdTTL: 15, deleteOnExpire: false });
+  const cache_384x960 = new NodeCache({ stdTTL: 15, deleteOnExpire: false });
+  const cache_1344x416 = new NodeCache({ stdTTL: 15, deleteOnExpire: false });
+  const cache_2160x3840 = new NodeCache({ stdTTL: 15, deleteOnExpire: false });
+  const cache_1080x1920 = new NodeCache({ stdTTL: 15, deleteOnExpire: false });
+  const cache_960x2016 = new NodeCache({ stdTTL: 15, deleteOnExpire: false });
+
+
+  const getCache = (type) => {
+    let cache = cache_384x960;
+    switch (type) {
+      case "384x960":
+        cache = cache_384x960;
+        break;
+      case "1344x416":
+        cache = cache_1344x416;
+        break;
+      case "2160x3840":
+        cache = cache_2160x3840;
+        break;
+      case "1080x1920":
+        cache = cache_1080x1920;
+        break;
+      case "cache_960x2016":
+        cache = cache_960x2016;
+        break;
+      default:
+        cache = cache_1080x1920;
+        break;
+    }
+    return cache;
+  }
+
 
 
 
@@ -48,6 +79,7 @@ export default (app) => {
       if (list.length > 0) {
         for (let i = 0; i < list.length; i++) {
           const image = list[i];
+          let cache = getCache(image.type);
           if (!cache.has(i)) {
             cache.set(i, image);
           }
@@ -66,7 +98,8 @@ export default (app) => {
 
   const verifyCache = async (req, res, next) => {
     try {
-      const countOf = await Image.countDocuments();
+      let type = req.body.type;
+      const countOf = await Image.countDocuments({ type: type });
       if (currentSkip === 0) {
         req.body.skip = countOf;
       } else if (currentSkip === countOf) {
@@ -77,6 +110,7 @@ export default (app) => {
         req.body.skip = req.body.skip % countOf;
       }
       currentSkip = req.body.skip;
+      let cache = getCache(type);
       if (cache.has(req.body.skip)) {
         return res.status(200).json({
           status: true,
@@ -92,51 +126,48 @@ export default (app) => {
   app.post("/api/image/getImage", verifyCache, async (req, res) => {
     let status = true;
     let list = [];
-    try {
-      let skip = Number(req.body.skip) - 1;
-      list = await Image.findOne().skip(skip).catch((err) => {
-        console.log(err);
-        status = false;
-      });
-      // list = list[0];
-      cache.set(skip, list);
-    } catch (error) {
-      console.log(error);
+
+    let skip = Number(req.body.skip) - 1;
+    list = await Image.findOne().skip(skip).catch((err) => {
+      console.log(err);
       status = false;
-    }
+    });
+
     res.send({
       status: status,
       img: list
     });
     res.end();
+    let cache = getCache(req.body.type)
+    cache.set(skip, list);
     return;
   });
 
   app.post("/api/image/upload", async (req, res) => {
     let status = true;
-    try {
-      let img = req.body.img;
-      const countOf = await Image.countDocuments();
-      const image = new Image({
-        data: img,
-      })
-
-      await image.save().catch((err) => {
-        console.log(err);
-        status = false;
-      })
-      currentSkip = 0;
-
-      cache.set(countOf + 1, image);
-
-    } catch (error) {
+    let img = req.body.img;
+    let type = req.body.type;
+    const countOf = await Image.countDocuments().catch((er) => {
+      console.error(er);
       status = false;
-      console.log(error);
-    }
+    });
+    const image = new Image({
+      data: img,
+      type: type
+    })
+
+    await image.save().catch((err) => {
+      console.log(err);
+      status = false;
+    })
+    currentSkip = 0;
+
     res.send({
       status: status,
     });
     res.end();
+    let cache = getCache(type)
+    cache.set(countOf + 1, image);
     return;
   });
 
