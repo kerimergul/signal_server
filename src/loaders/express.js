@@ -45,6 +45,7 @@ export default (app) => {
   const cache_960x2016 = new NodeCache({ stdTTL: 15, deleteOnExpire: false });
 
 
+
   const getCache = (type) => {
     let cache = cache_384x960;
     switch (type) {
@@ -113,13 +114,18 @@ export default (app) => {
       }
       currentSkip = req.body.skip;
       let cache = getCache(type);
+
       console.log(['req.body.skip', req.body.skip])
+      console.time('cache.has')
       if (cache.has(req.body.skip)) {
+        console.timeEnd('cache.has')
         return res.status(200).json({
           status: true,
           img: cache.get(req.body.skip),
         })
       }
+      console.timeEnd('cache.has')
+      console.log(['cache te yok'])
       return next();
     } catch (err) {
       throw new Error(err);
