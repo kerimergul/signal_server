@@ -44,7 +44,7 @@ export default (app) => {
   const cache_1080x1920 = new NodeCache({ stdTTL: 15, deleteOnExpire: false });
   const cache_960x2016 = new NodeCache({ stdTTL: 15, deleteOnExpire: false });
 
-
+  var client_id_last_skip = new Map();
 
   const getCache = (type) => {
     let cache = cache_384x960;
@@ -70,8 +70,6 @@ export default (app) => {
     }
     return cache;
   }
-
-
 
 
   const setCache = async (req, res, next) => {
@@ -100,31 +98,48 @@ export default (app) => {
   const verifyCache = async (req, res, next) => {
     try {
       let type = req.body.type;
+      let id = req.body.id;
+
       console.log(['type', type])
       const countOf = await Image.countDocuments({ type: type });
       console.log(['countOf', countOf])
-      if (currentSkip === 0) {
-        req.body.skip = countOf;
-      } else if (currentSkip === countOf) {
-        req.body.skip = currentSkip - 1;
-      }
+      // if (currentSkip === 0) {
+      //   req.body.skip = countOf;
+      // } else if (currentSkip === countOf) {
+      //   req.body.skip = currentSkip - 1;
+      // }
 
-      if (req.body.skip > countOf) {
-        req.body.skip = req.body.skip % countOf;
+      // if (req.body.skip > countOf) {
+      //   // req.body.skip = req.body.skip % countOf;
+      //   req.body.skip = 0;
+      // }
+      // currentSkip = req.body.skip;
+
+      console.log(['client id', id]);
+      let client_skip = client_id_last_skip.get(id);
+      if (!client_skip) {
+        client_id_last_skip.set(id, countOf - 1);
+        req.body.skip = countOf - 1;
+      } else {
+        if (client_skip == 0) {
+          client_skip = countOf - 1;
+        } else {
+          client_skip = client_skip - 1;
+        }
+        client_id_last_skip.set(id, client_skip);
+        req.body.skip = client_id_last_skip;
       }
-      currentSkip = req.body.skip;
       let cache = getCache(type);
-
+      if (!cache) {
+        console.log(['cache error']);
+      }
       console.log(['req.body.skip', req.body.skip])
-      console.time('cache.has')
       if (cache.has(req.body.skip)) {
-        console.timeEnd('cache.has')
         return res.status(200).json({
           status: true,
           img: cache.get(req.body.skip),
         })
       }
-      console.timeEnd('cache.has')
       console.log(['cache te yok'])
       return next();
     } catch (err) {
@@ -136,7 +151,7 @@ export default (app) => {
     let status = true;
     let list = [];
 
-    let skip = Number(req.body.skip) - 1;
+    let skip = Number(req.body.skip);
     if (skip < 0) {
       skip = 0;
     }
@@ -144,6 +159,9 @@ export default (app) => {
       console.log(err);
       status = false;
     });
+    if (!list) {
+      console.log(['RESİM YOK', skip])
+    }
 
     res.send({
       status: status,
