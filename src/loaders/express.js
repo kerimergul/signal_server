@@ -85,14 +85,14 @@ export default (app) => {
         cache.set(length - 1 - i, img);
       }
       console.timeEnd('setCache')
-      return res.status(200).json({
-        status: true,
-      })
+      // return res.status(200).json({
+      //   status: true,
+      // })
     } catch (error) {
       console.log(error);
-      return res.status(200).json({
-        status: false,
-      })
+      // return res.status(200).json({
+      //   status: false,
+      // })
     }
   }
 
@@ -210,6 +210,7 @@ export default (app) => {
   });
 
   app.get('/', (_req, res) => {
+    setCache();
     return res.status(200).json({
       resultMessage: {
         en: 'Project is successfully working...',
