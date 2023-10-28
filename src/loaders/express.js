@@ -113,6 +113,7 @@ export default (app) => {
       }
       currentSkip = req.body.skip;
       let cache = getCache(type);
+      console.log(['req.body.skip', req.body.skip])
       if (cache.has(req.body.skip)) {
         return res.status(200).json({
           status: true,
