@@ -116,6 +116,7 @@ export default (app) => {
       // currentSkip = req.body.skip;
 
       console.log(['client id', id]);
+      console.time('client_skip')
       let client_skip = client_id_last_skip.get(id);
       if (!client_skip) {
         client_id_last_skip.set(id, countOf - 1);
@@ -127,12 +128,13 @@ export default (app) => {
           client_skip = client_skip - 1;
         }
         client_id_last_skip.set(id, client_skip);
-        req.body.skip = client_id_last_skip;
+        req.body.skip = client_skip;
       }
       let cache = getCache(type);
       if (!cache) {
         console.log(['cache error']);
       }
+      console.timeEnd('client_skip')
       console.log(['req.body.skip', req.body.skip])
       if (cache.has(req.body.skip)) {
         return res.status(200).json({
