@@ -75,15 +75,16 @@ export default (app) => {
   const setCache = async (req, res, next) => {
     try {
       const list = await Image.find({});
-      if (list.length > 0) {
-        for (let i = 0; i < list.length; i++) {
-          const image = list[i];
-          let cache = getCache(image.type);
-          if (!cache.has(i)) {
-            cache.set(i, image);
-          }
-        }
+      const reversedList = list.reverse();
+      const length = reversedList.length;
+      const promiseList = [];
+      console.time('setCache')
+      for (let i = 0; i < length; i++) {
+        const img = reversedList[i];
+        let cache = getCache(img.type);
+        cache.set(length - 1 - i, img);
       }
+      console.timeEnd('setCache')
       return res.status(200).json({
         status: true,
       })
@@ -142,7 +143,7 @@ export default (app) => {
           img: cache.get(req.body.skip),
         })
       }
-      console.log(['cache te yok'])
+      console.log(['cache te yok']);
       return next();
     } catch (err) {
       throw new Error(err);
