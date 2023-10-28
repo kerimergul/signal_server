@@ -209,8 +209,8 @@ export default (app) => {
     return;
   });
 
-  app.get('/', (_req, res) => {
-    setCache();
+  app.get('/', async (_req, res) => {
+    await setCache();
     return res.status(200).json({
       resultMessage: {
         en: 'Project is successfully working...',
