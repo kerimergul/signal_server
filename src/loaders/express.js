@@ -94,6 +94,7 @@ export default (app) => {
       //   status: false,
       // })
     }
+    return true;
   }
 
   const verifyCache = async (req, res, next) => {
